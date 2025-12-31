@@ -1,5 +1,7 @@
 # HyprBoard
 
+Youtube preview: [https://youtu.be/F0n3Bi8N6v4](https://youtu.be/F0n3Bi8N6v4)
+
 **A Configuration Manager for the Hyprland Ecosystem.**
 
 HyprBoard is a GUI Based Configuration Manager for the Hyprland Ecosystem. Currently it supports 
@@ -55,12 +57,9 @@ HyprBoard expects standard configuration paths. Ensure your dotfiles are located
 ### Auto-Save
 All changes are auto saved imediately to disk.
 
-### Safe Migration
-NOW NOW This app auto detects 0.52 or 0.53 Hyprland and if 0.52 config on 0.53 then shows modal if you want to migrate config.
-
 ### Progress
 - **Waybar**: Still working on it, works and dosent break config files but its not user friendly enough (need suggestions)
-- **Wpaperd**: Soon (will be implementing copy files to a wallpapers folder coz i want to manually select certain images only from folders, so you will have duplicate wallpaers when u use this plugin without btrfs filesystem)
+- **Wpaperd**: Soon (will be implementing copy files to a wallpapers folder, i want to implement it in a way that you can select certain images only from folders, so you will have duplicate wallpaers when you use this plugin without btrfs filesystem)
 - **Import n Export**: Later (If this gains some popularity then, ima look to implement to share configs faster and more easily)
 - **Themes**: Curr Catppuccin Mocha, Nord, Drifter supported (dont plan to add anythin else rn, If anyone wants to add any other theme just implement new palette and add it to AppTheme enum in components/theme.rs)
 ---
@@ -73,7 +72,7 @@ NOW NOW This app auto detects 0.52 or 0.53 Hyprland and if 0.52 config on 0.53 t
 
 1.  **Clone the repository:**
     ```bash
-    git clone [https://github.com/shashstormer/hyprboard.git](https://github.com/shashstormer/hyprboard.git)
+    git clone https://github.com/shashstormer/hyprboard.git
     cd hyprboard
     ```
 
@@ -97,4 +96,3 @@ Specifically looking for help setting up a **GitHub Release Workflow** to automa
 ---
 
 *Built with Rust & Iced.*
-

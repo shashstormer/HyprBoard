@@ -1,0 +1,9 @@
+{
+  "plugins": [
+    "hyprland",
+    "waybar",
+    "hyprlock",
+    "themes"
+  ],
+  "theme": "Drifter"
+}

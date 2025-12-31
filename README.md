@@ -59,8 +59,8 @@ All changes are auto saved imediately to disk.
 NOW NOW This app auto detects 0.52 or 0.53 Hyprland and if 0.52 config on 0.53 then shows modal if you want to migrate config.
 
 ### Progress
-- **Waybar**: Still working on it, works and dosent break config files but its not user friendly enough (need suggestions, coz ma brain cant think shi)
-- **Wpaperd**: Soon (will be implementing copy files to a wallpapers folder coz i want to manually select certain images only from folders n shi so you will have duplicate wallpaers when u use this plugin without btrfs filesystem)
+- **Waybar**: Still working on it, works and dosent break config files but its not user friendly enough (need suggestions)
+- **Wpaperd**: Soon (will be implementing copy files to a wallpapers folder coz i want to manually select certain images only from folders, so you will have duplicate wallpaers when u use this plugin without btrfs filesystem)
 - **Import n Export**: Later (If this gains some popularity then, ima look to implement to share configs faster and more easily)
 - **Themes**: Curr Catppuccin Mocha, Nord, Drifter supported (dont plan to add anythin else rn, If anyone wants to add any other theme just implement new palette and add it to AppTheme enum in components/theme.rs)
 ---

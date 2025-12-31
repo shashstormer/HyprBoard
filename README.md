@@ -65,13 +65,36 @@ NOW NOW This app auto detects 0.52 or 0.53 Hyprland and if 0.52 config on 0.53 t
 - **Themes**: Curr Catppuccin Mocha, Nord, Drifter supported (dont plan to add anythin else rn, If anyone wants to add any other theme just implement new palette and add it to AppTheme enum in components/theme.rs)
 ---
 
-## Getting Started
-0.  **Idk just clone repo and `cargo build` n `cargo run` till i figure out smth (coz i just hopped to native app dev on rust)**
-1.  **Launch HyprBoard (basically `cargo run` but JUST IN CASE) (lemme see to setup github release workflow, anyone intrested & experienced can do)**.
-2.  **Explore Plugins**: Use the sidebar to navigate between Hyprland, Waybar, and Hyprlock.
-3.  **Search**: Press `Ctrl+K` to find a specific setting (e.g., "blur", "opacity", "workspaces").
-4.  **Create a Bundle**: Once you're happy with your setup, go to the **Themes** tab and create a Bundle to save your entire desktop state.
+### Prerequisites
+* **Rust & Cargo** installed on your system.
+* **Hyprland** ecosystem installed.
+
+### Installation
+
+1.  **Clone the repository:**
+    ```bash
+    git clone [https://github.com/shashstormer/hyprboard.git](https://github.com/shashstormer/hyprboard.git)
+    cd hyprboard
+    ```
+
+2.  **Build and Run:**
+    ```bash
+    cargo run --release
+    ```
+    *(Note: Binary releases via GitHub Actions are need to be set up. Contributions are welcome!)*
+
+3.  **Explore:**
+    * Use the sidebar to navigate plugins.
+    * Press `Ctrl+K` to search for specific settings (e.g., "blur", "opacity").
+    * Create a **Bundle** in the Themes tab to save your setup.
+
+---
+## Contributing
+
+I just hopped into native app dev with Rust, so contributions are very welcome!
+Specifically looking for help setting up a **GitHub Release Workflow** to automate binaries.
 
 ---
 
 *Built with Rust & Iced.*
+

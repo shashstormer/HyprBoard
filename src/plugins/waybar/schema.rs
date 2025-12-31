@@ -1179,19 +1179,16 @@ pub fn get_schema() -> Vec<ModuleSchema> {
 }
 
 pub fn get_module_schema(name: &str, schemas: &[ModuleSchema]) -> Option<ModuleSchema> {
-    
     if let Some(s) = schemas.iter().find(|s| s.module_type == name) {
         return Some(s.clone());
     }
 
-    
     if name.starts_with("custom/") {
         return schemas.iter().find(|s| s.module_type == "custom").cloned();
     }
 
-    
     if name.starts_with("hyprland/") {
-         return None;
+        return None;
     }
 
     None

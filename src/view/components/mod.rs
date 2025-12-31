@@ -13,6 +13,6 @@ pub mod setting_row;
 pub mod slider;
 pub mod text_input;
 pub mod theme;
+pub mod toast;
 pub mod toggle;
 pub mod tooltip;
-pub mod toast;

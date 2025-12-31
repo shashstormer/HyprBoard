@@ -1,8 +1,6 @@
 use iced::widget::{container, row, text};
-use iced::{Element, Theme, Color, Padding};
+use iced::{Color, Element, Padding, Theme};
 use std::time::{Duration, Instant};
-
-
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum ToastType {
@@ -42,10 +40,17 @@ pub fn view<'a, Message: Clone + 'a>(toast: &'a Toast) -> Element<'a, Message> {
         ToastType::Error => (p.red, p.base, "✕"),
     };
 
-    container(row![
-        text(icon).size(16).style(move |_| text::Style { color: Some(text_color) }),
-        text(&toast.message).size(14).style(move |_| text::Style { color: Some(text_color) })
-    ].spacing(10))
+    container(
+        row![
+            text(icon).size(16).style(move |_| text::Style {
+                color: Some(text_color)
+            }),
+            text(&toast.message).size(14).style(move |_| text::Style {
+                color: Some(text_color)
+            })
+        ]
+        .spacing(10),
+    )
     .padding(Padding::new(10.0))
     .style(move |_: &Theme| container::Style {
         background: Some(iced::Background::Color(bg_color)),

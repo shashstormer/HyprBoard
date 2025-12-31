@@ -52,13 +52,12 @@ pub struct WaybarPlugin {
     delete_modal_open: bool,
     delete_target: Option<String>,
     delete_input: String,
-    
-    
+
     current_tab: EditorTab,
     json_content: iced::widget::text_editor::Content,
 
     style_content: iced::widget::text_editor::Content,
-    
+
     style_bg_color: String,
     style_text_color: String,
     style_font_size: String,
@@ -70,7 +69,7 @@ pub struct WaybarPlugin {
     json_error_modal_open: bool,
     json_error_message: String,
     pending_json_save: Option<String>,
-    
+
     custom_option_key_input: String,
     custom_option_val_input: String,
     delete_option_modal_open: bool,
@@ -190,10 +189,10 @@ impl WaybarPlugin {
 
     fn get_css_selector(&self, module_name: &str) -> String {
         if module_name.starts_with("custom/") {
-             let name = module_name.strip_prefix("custom/").unwrap();
-             format!("#custom-{}", name)
+            let name = module_name.strip_prefix("custom/").unwrap();
+            format!("#custom-{}", name)
         } else {
-             format!("#{}", module_name)
+            format!("#{}", module_name)
         }
     }
 
@@ -253,7 +252,11 @@ impl WaybarPlugin {
         None
     }
 
-    fn render_module_preview<'a>(&'a self, module_name: &str, theme: &'a AppTheme) -> Element<'a, AppMessage> {
+    fn render_module_preview<'a>(
+        &'a self,
+        module_name: &str,
+        theme: &'a AppTheme,
+    ) -> Element<'a, AppMessage> {
         let palette = theme.palette();
         let schema = self.get_schema_for_module(module_name);
 
@@ -262,12 +265,11 @@ impl WaybarPlugin {
             o => o,
         };
 
-        
         let get_val = |key: &str| -> String {
             if let Some(mod_val) = root.get(module_name) {
-                 if let Some(v) = mod_val.get(key) {
-                     return v.as_str().unwrap_or("").to_string();
-                 }
+                if let Some(v) = mod_val.get(key) {
+                    return v.as_str().unwrap_or("").to_string();
+                }
             }
             if let Some(s) = &schema {
                 if let Some(opt) = s.options.iter().find(|o| o.name == key) {
@@ -279,17 +281,13 @@ impl WaybarPlugin {
 
         let format = get_val("format");
         let mut display_text = if format.is_empty() {
-             module_name.to_string()
+            module_name.to_string()
         } else {
-             format
+            format
         };
 
-        
         let icon = schema.as_ref().map(|s| s.icon).unwrap_or(' ');
 
-        
-        
-        
         lazy_static::lazy_static! {
             static ref RE: regex::Regex = regex::Regex::new(r"\{([a-zA-Z0-9_-]+)(?::.*?)?\}").unwrap();
             static ref REPLACEMENTS_MAP: HashMap<&'static str, &'static str> = HashMap::from([
@@ -306,56 +304,58 @@ impl WaybarPlugin {
             ]);
         }
 
-        display_text = RE.replace_all(&display_text, |caps: &regex::Captures| {
-            let key = &caps[1];
-            if key == "icon" {
-                return icon.to_string();
-            }
-            
-            if display_text.contains("%H") || display_text.contains("%M") {
-                 
-                 if caps.get(0).map(|m| m.as_str().contains(":%")).unwrap_or(false) {
-                     return "14:30".to_string();
-                 }
-            }
-            if display_text.contains("%Y") || display_text.contains("%d") {
-                  if caps.get(0).map(|m| m.as_str().contains(":%")).unwrap_or(false) {
-                     return "2023-10-27".to_string();
-                 }
-            }
+        display_text = RE
+            .replace_all(&display_text, |caps: &regex::Captures| {
+                let key = &caps[1];
+                if key == "icon" {
+                    return icon.to_string();
+                }
 
-            if let Some(val) = REPLACEMENTS_MAP.get(key) {
-                val.to_string()
-            } else {
-                
-                
-                
-                
-                "?".to_string()
-            }
-        }).to_string();
+                if display_text.contains("%H") || display_text.contains("%M") {
+                    if caps
+                        .get(0)
+                        .map(|m| m.as_str().contains(":%"))
+                        .unwrap_or(false)
+                    {
+                        return "14:30".to_string();
+                    }
+                }
+                if display_text.contains("%Y") || display_text.contains("%d") {
+                    if caps
+                        .get(0)
+                        .map(|m| m.as_str().contains(":%"))
+                        .unwrap_or(false)
+                    {
+                        return "2023-10-27".to_string();
+                    }
+                }
 
-        
-        
+                if let Some(val) = REPLACEMENTS_MAP.get(key) {
+                    val.to_string()
+                } else {
+                    "?".to_string()
+                }
+            })
+            .to_string();
+
         if display_text.contains("{icon}") {
-             
-             
-             
-             display_text = display_text.replace("{icon}", &icon.to_string());
+            display_text = display_text.replace("{icon}", &icon.to_string());
         }
 
-        container(text(display_text).size(13).style(move |_: &_| text::Style{color: Some(palette.text)}))
-            .padding([4, 8])
-            .style(move |_: &_| container::Style{
-                background: Some(iced::Background::Color(palette.surface0)),
-                border: iced::Border{
-                    radius: 4.0.into(),
-                    width: 1.0,
-                    color: palette.surface1
-                },
-                ..Default::default()
-            })
-            .into()
+        container(text(display_text).size(13).style(move |_: &_| text::Style {
+            color: Some(palette.text),
+        }))
+        .padding([4, 8])
+        .style(move |_: &_| container::Style {
+            background: Some(iced::Background::Color(palette.surface0)),
+            border: iced::Border {
+                radius: 4.0.into(),
+                width: 1.0,
+                color: palette.surface1,
+            },
+            ..Default::default()
+        })
+        .into()
     }
 
     fn save_config(&mut self) {
@@ -363,9 +363,15 @@ impl WaybarPlugin {
             let new_content = parser::to_string(root);
             if let Err(e) = std::fs::write(&self.config_path, &new_content) {
                 eprintln!("[Waybar] Failed to save config: {}", e);
-                self.toasts.push(crate::view::components::toast::Toast::new(format!("Failed to save: {}", e), crate::view::components::toast::ToastType::Error));
+                self.toasts.push(crate::view::components::toast::Toast::new(
+                    format!("Failed to save: {}", e),
+                    crate::view::components::toast::ToastType::Error,
+                ));
             } else {
-                self.toasts.push(crate::view::components::toast::Toast::new("Configuration Saved".to_string(), crate::view::components::toast::ToastType::Success));
+                self.toasts.push(crate::view::components::toast::Toast::new(
+                    "Configuration Saved".to_string(),
+                    crate::view::components::toast::ToastType::Success,
+                ));
             }
             self.config_cache = parser::to_json_value(root);
             self.recalc_available_modules();
@@ -418,18 +424,21 @@ impl Plugin for WaybarPlugin {
 
                         let _ = std::fs::write(&self.style_path, &new_content);
                         self.style_cache = new_content;
-                        self.style_content = iced::widget::text_editor::Content::with_text(&self.style_cache);
+                        self.style_content =
+                            iced::widget::text_editor::Content::with_text(&self.style_cache);
 
                         if let Some(m) = &self.active_module {
-                             if selector == self.get_css_selector(m) {
-                                 match prop {
-                                     "background-color" | "background" => self.style_bg_color = value,
-                                     "color" => self.style_text_color = value,
-                                     "font-size" => self.style_font_size = value,
-                                     "padding" => self.style_padding = value,
-                                     _ => {}
-                                 }
-                             }
+                            if selector == self.get_css_selector(m) {
+                                match prop {
+                                    "background-color" | "background" => {
+                                        self.style_bg_color = value
+                                    }
+                                    "color" => self.style_text_color = value,
+                                    "font-size" => self.style_font_size = value,
+                                    "padding" => self.style_padding = value,
+                                    _ => {}
+                                }
+                            }
                         }
                     }
                     return Task::none();
@@ -641,12 +650,14 @@ impl Plugin for WaybarPlugin {
                         if let Some(stripped) = target.strip_prefix("style:") {
                             if let Some((selector, prop)) = stripped.split_once(':') {
                                 let parser = css_parser::CssParser::new(&self.style_cache);
-                                parser.get_property(selector, prop).unwrap_or("rgba(0,0,0,1)".to_string())
+                                parser
+                                    .get_property(selector, prop)
+                                    .unwrap_or("rgba(0,0,0,1)".to_string())
                             } else {
                                 "rgba(0,0,0,1)".to_string()
                             }
                         } else {
-                             "rgba(0,0,0,1)".to_string()
+                            "rgba(0,0,0,1)".to_string()
                         }
                     } else {
                         let parts: Vec<&str> = target.split(':').collect();
@@ -741,59 +752,48 @@ impl Plugin for WaybarPlugin {
                     self.create_custom_name = val;
                 }
                 WaybarAction::CreateCustomConfirm(name) => {
-                     let name = if name.starts_with("custom/") {
-                         name.to_string()
-                     } else {
-                         format!("custom/{}", name)
-                     };
+                    let name = if name.starts_with("custom/") {
+                        name.to_string()
+                    } else {
+                        format!("custom/{}", name)
+                    };
 
-                     
-                     let exists = if let Some(_root) = &self.ast_root {
-                         let val = match self.config_cache {
-                             Value::Array(ref arr) => arr.get(0),
-                             ref o => Some(o),
-                         };
-                         val.and_then(|v| v.get(&name)).is_some()
-                     } else {
-                         false
-                     };
+                    let exists = if let Some(_root) = &self.ast_root {
+                        let val = match self.config_cache {
+                            Value::Array(ref arr) => arr.get(0),
+                            ref o => Some(o),
+                        };
+                        val.and_then(|v| v.get(&name)).is_some()
+                    } else {
+                        false
+                    };
 
-                     if !exists {
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          if let Some(mut root) = self.ast_root.take() {
-                              
-                              let path = if matches!(root, Node::List(_)) {
-                                  vec!["0", name.as_str()]
-                              } else {
-                                  vec![name.as_str()]
-                              };
-                              
-                              let default_config = serde_json::json!({
-                                  "exec": "echo 'New Component'",
-                                  "format": "{}",
-                                  "interval": 30
-                              });
-                              
-                              parser::set_value(&mut root, &path, default_config);
-                              self.ast_root = Some(root);
-                              self.save_config();
-                              self.recalc_available_modules();
-                              
-                              
-                              self.mode = WaybarMode::Edit;
-                              self.active_module = Some(name.clone());
-                          }
-                     }
-                     
-                     self.create_custom_modal_open = false;
-                     self.create_custom_name = String::new();
+                    if !exists {
+                        if let Some(mut root) = self.ast_root.take() {
+                            let path = if matches!(root, Node::List(_)) {
+                                vec!["0", name.as_str()]
+                            } else {
+                                vec![name.as_str()]
+                            };
+
+                            let default_config = serde_json::json!({
+                                "exec": "echo 'New Component'",
+                                "format": "{}",
+                                "interval": 30
+                            });
+
+                            parser::set_value(&mut root, &path, default_config);
+                            self.ast_root = Some(root);
+                            self.save_config();
+                            self.recalc_available_modules();
+
+                            self.mode = WaybarMode::Edit;
+                            self.active_module = Some(name.clone());
+                        }
+                    }
+
+                    self.create_custom_modal_open = false;
+                    self.create_custom_name = String::new();
                 }
                 WaybarAction::CreateCustomCancel => {
                     self.create_custom_modal_open = false;
@@ -804,7 +804,6 @@ impl Plugin for WaybarPlugin {
                         return Task::none();
                     }
 
-                    
                     if self.current_tab == EditorTab::Json {
                         let text = self.json_content.text();
                         match serde_json::from_str::<Value>(&text) {
@@ -813,37 +812,42 @@ impl Plugin for WaybarPlugin {
                                 if let Some(m) = &self.active_module {
                                     if let Some(root_node) = &mut self.ast_root {
                                         let is_array = matches!(root_node, Node::List(_));
-                                        
+
                                         if m == "general" {
-                                            let path_prefix = if is_array { vec!["0"] } else { vec![] };
-                                            
+                                            let path_prefix =
+                                                if is_array { vec!["0"] } else { vec![] };
+
                                             if let Some(obj) = val.as_object() {
-                                            
-                                            
-                                            let existing_keys = if let Some(old_obj) = match &self.config_cache {
-                                                Value::Array(arr) => arr.get(0).unwrap_or(&Value::Null),
-                                                o => o,
-                                            }.as_object() {
-                                                old_obj.keys().cloned().collect::<Vec<_>>()
-                                            } else {
-                                                Vec::new()
-                                            };
-
-                                            for k in existing_keys {
-                                                if !obj.contains_key(&k) {
-                                                    let mut path_vec = path_prefix.clone();
-                                                    path_vec.push(&k);
-                                                    let _ = parser::remove_key(root_node, &path_vec);
-                                                }
-                                            }
-
-                                            
-                                            for (k, v) in obj {
-                                                let path = if is_array {
-                                                    vec!["0", k.as_str()]
+                                                let existing_keys = if let Some(old_obj) =
+                                                    match &self.config_cache {
+                                                        Value::Array(arr) => {
+                                                            arr.get(0).unwrap_or(&Value::Null)
+                                                        }
+                                                        o => o,
+                                                    }
+                                                    .as_object()
+                                                {
+                                                    old_obj.keys().cloned().collect::<Vec<_>>()
                                                 } else {
-                                                    vec![k.as_str()]
+                                                    Vec::new()
                                                 };
+
+                                                for k in existing_keys {
+                                                    if !obj.contains_key(&k) {
+                                                        let mut path_vec = path_prefix.clone();
+                                                        path_vec.push(&k);
+                                                        let _ = parser::remove_key(
+                                                            root_node, &path_vec,
+                                                        );
+                                                    }
+                                                }
+
+                                                for (k, v) in obj {
+                                                    let path = if is_array {
+                                                        vec!["0", k.as_str()]
+                                                    } else {
+                                                        vec![k.as_str()]
+                                                    };
                                                     parser::set_value(root_node, &path, v.clone());
                                                 }
                                                 success = true;
@@ -859,11 +863,11 @@ impl Plugin for WaybarPlugin {
                                         }
                                     }
                                 }
-                                
+
                                 if success {
                                     self.save_config();
                                 }
-                            },
+                            }
                             Err(e) => {
                                 self.json_error_message = format!("Invalid JSON: {}", e);
                                 self.json_error_modal_open = true;
@@ -871,110 +875,117 @@ impl Plugin for WaybarPlugin {
                             }
                         }
                     } else if self.current_tab == EditorTab::Style {
-                        
                         self.style_cache = self.style_content.text();
                         let _ = std::fs::write(&self.style_path, &self.style_cache);
-                        
                     }
 
-                    
                     self.current_tab = tab;
 
-                    
                     match self.current_tab {
                         EditorTab::Json => {
-                             if let Some(m) = &self.active_module {
-                                 let root = match &self.config_cache {
-                                     Value::Array(arr) => arr.get(0).unwrap_or(&Value::Null),
-                                     o => o,
-                                 };
-                                 
-                                 if m == "general" {
-                                     let general_keys = [
-                                        "layer", "position", "height", "width", "spacing", 
-                                        "margin-top", "margin-bottom", "margin-left", "margin-right", 
-                                        "name", "mode", "include", "reload_style_on_change", "gtk-layer-shell"
-                                     ];
-                                     let mut map = serde_json::Map::new();
-                                     if let Some(obj) = root.as_object() {
-                                         for k in general_keys {
-                                             if let Some(v) = obj.get(k) {
-                                                 map.insert(k.to_string(), v.clone());
-                                             }
-                                         }
-                                         
-                                         for (k, v) in obj {
-                                             if !general_keys.contains(&k.as_str()) {
-                                                  if !["modules-left", "modules-center", "modules-right"].contains(&k.as_str()) {
-                                                      map.insert(k.to_string(), v.clone());
-                                                  }
-                                             }
-                                         }
-                                     }
-                                     self.json_content = iced::widget::text_editor::Content::with_text(&serde_json::to_string_pretty(&Value::Object(map)).unwrap_or_default());
-                                 } else {
-                                     if let Some(val) = root.get(m) {
-                                         self.json_content = iced::widget::text_editor::Content::with_text(&serde_json::to_string_pretty(val).unwrap_or_default());
-                                     } else {
-                                         self.json_content = iced::widget::text_editor::Content::with_text("{}");
-                                     }
-                                 }
-                             }
+                            if let Some(m) = &self.active_module {
+                                let root = match &self.config_cache {
+                                    Value::Array(arr) => arr.get(0).unwrap_or(&Value::Null),
+                                    o => o,
+                                };
+
+                                if m == "general" {
+                                    let general_keys = [
+                                        "layer",
+                                        "position",
+                                        "height",
+                                        "width",
+                                        "spacing",
+                                        "margin-top",
+                                        "margin-bottom",
+                                        "margin-left",
+                                        "margin-right",
+                                        "name",
+                                        "mode",
+                                        "include",
+                                        "reload_style_on_change",
+                                        "gtk-layer-shell",
+                                    ];
+                                    let mut map = serde_json::Map::new();
+                                    if let Some(obj) = root.as_object() {
+                                        for k in general_keys {
+                                            if let Some(v) = obj.get(k) {
+                                                map.insert(k.to_string(), v.clone());
+                                            }
+                                        }
+
+                                        for (k, v) in obj {
+                                            if !general_keys.contains(&k.as_str()) {
+                                                if ![
+                                                    "modules-left",
+                                                    "modules-center",
+                                                    "modules-right",
+                                                ]
+                                                .contains(&k.as_str())
+                                                {
+                                                    map.insert(k.to_string(), v.clone());
+                                                }
+                                            }
+                                        }
+                                    }
+                                    self.json_content =
+                                        iced::widget::text_editor::Content::with_text(
+                                            &serde_json::to_string_pretty(&Value::Object(map))
+                                                .unwrap_or_default(),
+                                        );
+                                } else {
+                                    if let Some(val) = root.get(m) {
+                                        self.json_content =
+                                            iced::widget::text_editor::Content::with_text(
+                                                &serde_json::to_string_pretty(val)
+                                                    .unwrap_or_default(),
+                                            );
+                                    } else {
+                                        self.json_content =
+                                            iced::widget::text_editor::Content::with_text("{}");
+                                    }
+                                }
+                            }
                         }
                         EditorTab::Style => {
-                            self.style_content = iced::widget::text_editor::Content::with_text(&self.style_cache);
+                            self.style_content =
+                                iced::widget::text_editor::Content::with_text(&self.style_cache);
                             if let Some(m) = &self.active_module {
                                 let selector = self.get_css_selector(m);
                                 let parser = css_parser::CssParser::new(&self.style_cache);
-                                self.style_bg_color = parser.get_property(&selector, "background-color")
+                                self.style_bg_color = parser
+                                    .get_property(&selector, "background-color")
                                     .or_else(|| parser.get_property(&selector, "background"))
                                     .unwrap_or_default();
-                                self.style_text_color = parser.get_property(&selector, "color").unwrap_or_default();
-                                self.style_font_size = parser.get_property(&selector, "font-size").unwrap_or_default();
-                                self.style_padding = parser.get_property(&selector, "padding").unwrap_or_default();
+                                self.style_text_color =
+                                    parser.get_property(&selector, "color").unwrap_or_default();
+                                self.style_font_size = parser
+                                    .get_property(&selector, "font-size")
+                                    .unwrap_or_default();
+                                self.style_padding = parser
+                                    .get_property(&selector, "padding")
+                                    .unwrap_or_default();
                             }
                         }
-                        EditorTab::Settings => {
-                            
-                            
-                            
-                            
-                        }
+                        EditorTab::Settings => {}
                     }
                 }
                 WaybarAction::UpdateJson(action) => {
-                     self.json_content.perform(action);
+                    self.json_content.perform(action);
                 }
                 WaybarAction::UpdateStyle(action) => {
-                     self.style_content.perform(action);
+                    self.style_content.perform(action);
                 }
                 WaybarAction::ShowToast(msg, type_) => {
-                    self.toasts.push(crate::view::components::toast::Toast::new(msg, type_));
+                    self.toasts
+                        .push(crate::view::components::toast::Toast::new(msg, type_));
                 }
                 WaybarAction::JsonErrorModalClose => {
                     self.json_error_modal_open = false;
                     self.json_error_message = String::new();
                 }
                 WaybarAction::JsonErrorModalConfirm => {
-                    
-                      if let Some(_content) = self.pending_json_save.take() {
-                         
-                         
-                         
-                         
-                         
-                         
-                         
-                         
-                         
-                         
-                         
-                         
-                         
-                         
-                         
-                         
-                    }
+                    if let Some(_content) = self.pending_json_save.take() {}
                     self.json_error_modal_open = false;
                 }
                 WaybarAction::DebugRun(cmd) => {
@@ -998,15 +1009,18 @@ impl Plugin for WaybarPlugin {
                                 Err(e) => format!("Error: {}", e),
                             }
                         },
-                        move |out| AppMessage::PluginMessage(id, PluginMsg::Waybar(WaybarAction::DebugOutput(out))),
+                        move |out| {
+                            AppMessage::PluginMessage(
+                                id,
+                                PluginMsg::Waybar(WaybarAction::DebugOutput(out)),
+                            )
+                        },
                     );
                 }
                 WaybarAction::DebugOutput(out) => {
                     self.debug_output.push_str(&out);
                 }
-                WaybarAction::DebugStop => {
-                     
-                }
+                WaybarAction::DebugStop => {}
                 WaybarAction::CustomOptionInputKey(val) => {
                     self.custom_option_key_input = val;
                 }
@@ -1018,78 +1032,82 @@ impl Plugin for WaybarPlugin {
                     let val_str = self.custom_option_val_input.clone();
 
                     if !key.is_empty() {
-                        
                         let exists = if let Some(m) = &self.active_module {
-                             let root = match &self.config_cache {
-                                 Value::Array(arr) => arr.get(0).unwrap_or(&Value::Null),
-                                 o => o,
-                             };
-                             if let Some(mod_val) = root.get(m) {
-                                 mod_val.get(&key).is_some()
-                             } else if m == "general" {
-                                 root.get(&key).is_some()
-                             } else {
-                                 false
-                             }
+                            let root = match &self.config_cache {
+                                Value::Array(arr) => arr.get(0).unwrap_or(&Value::Null),
+                                o => o,
+                            };
+                            if let Some(mod_val) = root.get(m) {
+                                mod_val.get(&key).is_some()
+                            } else if m == "general" {
+                                root.get(&key).is_some()
+                            } else {
+                                false
+                            }
                         } else {
                             false
                         };
 
                         if !exists {
-                             
-                             let val_to_set = if val_str == "true" {
-                                 serde_json::Value::Bool(true)
-                             } else if val_str == "false" {
-                                 serde_json::Value::Bool(false)
-                             } else if let Ok(i) = val_str.parse::<i64>() {
-                                 serde_json::Value::Number(i.into())
-                             } else if let Ok(f) = val_str.parse::<f64>() {
-                                 if let Some(n) = serde_json::Number::from_f64(f) {
-                                     serde_json::Value::Number(n)
-                                 } else {
-                                     Value::String(val_str)
-                                 }
-                             } else {
-                                 Value::String(val_str)
-                             };
+                            let val_to_set = if val_str == "true" {
+                                serde_json::Value::Bool(true)
+                            } else if val_str == "false" {
+                                serde_json::Value::Bool(false)
+                            } else if let Ok(i) = val_str.parse::<i64>() {
+                                serde_json::Value::Number(i.into())
+                            } else if let Ok(f) = val_str.parse::<f64>() {
+                                if let Some(n) = serde_json::Number::from_f64(f) {
+                                    serde_json::Value::Number(n)
+                                } else {
+                                    Value::String(val_str)
+                                }
+                            } else {
+                                Value::String(val_str)
+                            };
 
-                             if let Some(mod_name) = &self.active_module {
-                                 let mod_name = mod_name.clone();
-                                 if let Some(root) = &mut self.ast_root {
-                                     let is_array = matches!(root, Node::List(_));
+                            if let Some(mod_name) = &self.active_module {
+                                let mod_name = mod_name.clone();
+                                if let Some(root) = &mut self.ast_root {
+                                    let is_array = matches!(root, Node::List(_));
 
-                                     let path_vec = if mod_name == "general" {
-                                         if is_array {
-                                             vec!["0".to_string(), key.clone()]
-                                         } else {
-                                             vec![key.clone()]
-                                         }
-                                     } else {
-                                         if let Node::List(bars) = root {
-                                             let mut bar_idx = 0;
-                                             for (i, (bar_node, _)) in bars.children.iter().enumerate() {
-                                                 if let Node::Dict(dict) = bar_node {
-                                                     if dict.children.iter().any(|(k, _, _)| k.value == mod_name)
-                                                     {
-                                                         bar_idx = i;
-                                                         break;
-                                                     }
-                                                 }
-                                             }
-                                             vec![bar_idx.to_string(), mod_name, key.clone()]
-                                         } else {
-                                             vec![mod_name, key.clone()]
-                                         }
-                                     };
+                                    let path_vec = if mod_name == "general" {
+                                        if is_array {
+                                            vec!["0".to_string(), key.clone()]
+                                        } else {
+                                            vec![key.clone()]
+                                        }
+                                    } else {
+                                        if let Node::List(bars) = root {
+                                            let mut bar_idx = 0;
+                                            for (i, (bar_node, _)) in
+                                                bars.children.iter().enumerate()
+                                            {
+                                                if let Node::Dict(dict) = bar_node {
+                                                    if dict
+                                                        .children
+                                                        .iter()
+                                                        .any(|(k, _, _)| k.value == mod_name)
+                                                    {
+                                                        bar_idx = i;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                            vec![bar_idx.to_string(), mod_name, key.clone()]
+                                        } else {
+                                            vec![mod_name, key.clone()]
+                                        }
+                                    };
 
-                                     let path_refs: Vec<&str> = path_vec.iter().map(|s| s.as_str()).collect();
-                                     parser::set_value(root, &path_refs, val_to_set);
-                                     self.save_config();
+                                    let path_refs: Vec<&str> =
+                                        path_vec.iter().map(|s| s.as_str()).collect();
+                                    parser::set_value(root, &path_refs, val_to_set);
+                                    self.save_config();
 
-                                     self.custom_option_key_input.clear();
-                                     self.custom_option_val_input.clear();
-                                 }
-                             }
+                                    self.custom_option_key_input.clear();
+                                    self.custom_option_val_input.clear();
+                                }
+                            }
                         }
                     }
                 }
@@ -1100,38 +1118,42 @@ impl Plugin for WaybarPlugin {
                 WaybarAction::CustomOptionDeleteConfirm => {
                     if let Some(target_key) = &self.delete_option_target {
                         if let Some(mod_name) = &self.active_module {
-                             let mod_name = mod_name.clone();
-                             if let Some(root) = &mut self.ast_root {
-                                 let is_array = matches!(root, Node::List(_));
+                            let mod_name = mod_name.clone();
+                            if let Some(root) = &mut self.ast_root {
+                                let is_array = matches!(root, Node::List(_));
 
-                                 let path_vec = if mod_name == "general" {
-                                     if is_array {
-                                         vec!["0".to_string(), target_key.clone()]
-                                     } else {
-                                         vec![target_key.clone()]
-                                     }
-                                 } else {
-                                     if let Node::List(bars) = root {
-                                         let mut bar_idx = 0;
-                                         for (i, (bar_node, _)) in bars.children.iter().enumerate() {
-                                             if let Node::Dict(dict) = bar_node {
-                                                 if dict.children.iter().any(|(k, _, _)| k.value == mod_name)
-                                                 {
-                                                     bar_idx = i;
-                                                     break;
-                                                 }
-                                             }
-                                         }
-                                         vec![bar_idx.to_string(), mod_name, target_key.clone()]
-                                     } else {
-                                         vec![mod_name, target_key.clone()]
-                                     }
-                                 };
+                                let path_vec = if mod_name == "general" {
+                                    if is_array {
+                                        vec!["0".to_string(), target_key.clone()]
+                                    } else {
+                                        vec![target_key.clone()]
+                                    }
+                                } else {
+                                    if let Node::List(bars) = root {
+                                        let mut bar_idx = 0;
+                                        for (i, (bar_node, _)) in bars.children.iter().enumerate() {
+                                            if let Node::Dict(dict) = bar_node {
+                                                if dict
+                                                    .children
+                                                    .iter()
+                                                    .any(|(k, _, _)| k.value == mod_name)
+                                                {
+                                                    bar_idx = i;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        vec![bar_idx.to_string(), mod_name, target_key.clone()]
+                                    } else {
+                                        vec![mod_name, target_key.clone()]
+                                    }
+                                };
 
-                                 let path_refs: Vec<&str> = path_vec.iter().map(|s| s.as_str()).collect();
-                                 let _ = parser::remove_key(root, &path_refs);
-                                 self.save_config();
-                             }
+                                let path_refs: Vec<&str> =
+                                    path_vec.iter().map(|s| s.as_str()).collect();
+                                let _ = parser::remove_key(root, &path_refs);
+                                self.save_config();
+                            }
                         }
                     }
                     self.delete_option_modal_open = false;
@@ -1376,32 +1398,39 @@ impl Plugin for WaybarPlugin {
             }
         };
 
-
-
         // Waybar Preview
 
-        
         let preview_bar_better = container(
-             row![
-                 row(self.get_list_items("modules-left").into_iter().map(|m| {
-                      self.render_module_preview(&m, theme)
-                 })).spacing(4),
-                 iced::widget::Space::new().width(Length::Fill),
-                 row(self.get_list_items("modules-center").into_iter().map(|m| {
-                       self.render_module_preview(&m, theme)
-                 })).spacing(4),
-                 iced::widget::Space::new().width(Length::Fill),
-                 row(self.get_list_items("modules-right").into_iter().map(|m| {
-                       self.render_module_preview(&m, theme)
-                 })).spacing(4)
-             ]
-             .width(Length::Fill)
+            row![
+                row(self
+                    .get_list_items("modules-left")
+                    .into_iter()
+                    .map(|m| { self.render_module_preview(&m, theme) }))
+                .spacing(4),
+                iced::widget::Space::new().width(Length::Fill),
+                row(self
+                    .get_list_items("modules-center")
+                    .into_iter()
+                    .map(|m| { self.render_module_preview(&m, theme) }))
+                .spacing(4),
+                iced::widget::Space::new().width(Length::Fill),
+                row(self
+                    .get_list_items("modules-right")
+                    .into_iter()
+                    .map(|m| { self.render_module_preview(&m, theme) }))
+                .spacing(4)
+            ]
+            .width(Length::Fill),
         )
         .padding(10)
-        .style(move |_: &_| container::Style{
-             background: Some(iced::Background::Color(palette.mantle)),
-             border: iced::Border { width: 0.0, radius: 0.0.into(), color: iced::Color::TRANSPARENT},
-             ..Default::default()
+        .style(move |_: &_| container::Style {
+            background: Some(iced::Background::Color(palette.mantle)),
+            border: iced::Border {
+                width: 0.0,
+                radius: 0.0.into(),
+                color: iced::Color::TRANSPARENT,
+            },
+            ..Default::default()
         });
 
         // Mode Switcher
@@ -1424,7 +1453,7 @@ impl Plugin for WaybarPlugin {
         ]
         .spacing(10)
         .padding(10);
-        
+
         // Wrap mode_bar and preview
         let top_section = column![preview_bar_better, mode_bar].spacing(0);
 
@@ -1557,8 +1586,16 @@ impl Plugin for WaybarPlugin {
                             .spacing(5)
                             .into()
                         }))
-                        .spacing(5)),
-                    container(btn::primary("Create Custom Module", AppMessage::PluginMessage(self.id, PluginMsg::Waybar(WaybarAction::CreateCustomInit)))).width(Length::Fill)
+                        .spacing(5)
+                    ),
+                    container(btn::primary(
+                        "Create Custom Module",
+                        AppMessage::PluginMessage(
+                            self.id,
+                            PluginMsg::Waybar(WaybarAction::CreateCustomInit)
+                        )
+                    ))
+                    .width(Length::Fill)
                 ]
                 .spacing(10)
                 .width(Length::Fixed(250.0))
@@ -1571,115 +1608,198 @@ impl Plugin for WaybarPlugin {
                 let display_modules = modules.clone();
                 let query = self.search_query.to_lowercase();
 
-                let sidebar_list = column(display_modules.into_iter()
-                    .filter(|m| query.is_empty() || m.to_lowercase().contains(&query))
-                    .map(|m| {
-                    let is_active = self.active_module.as_ref() == Some(&m);
-                    let msg =
-                        AppMessage::PluginMessage(self.id, PluginMsg::SwitchInternalTab(m.clone()));
-                    if is_active {
-                        btn::secondary(text(m), msg)
-                    } else {
-                        btn::ghost(text(m), msg)
-                    }
-                }))
+                let sidebar_list = column(
+                    display_modules
+                        .into_iter()
+                        .filter(|m| query.is_empty() || m.to_lowercase().contains(&query))
+                        .map(|m| {
+                            let is_active = self.active_module.as_ref() == Some(&m);
+                            let msg = AppMessage::PluginMessage(
+                                self.id,
+                                PluginMsg::SwitchInternalTab(m.clone()),
+                            );
+                            if is_active {
+                                btn::secondary(text(m), msg)
+                            } else {
+                                btn::ghost(text(m), msg)
+                            }
+                        }),
+                )
                 .spacing(5);
 
                 let sidebar = column![
-                     ti::input("Search...", &self.search_query, move |v| AppMessage::PluginMessage(self.id, PluginMsg::UpdateConfig("internal:search".to_string(), v))),
-                     scrollable(sidebar_list)
-                ].spacing(10);
+                    ti::input("Search...", &self.search_query, move |v| {
+                        AppMessage::PluginMessage(
+                            self.id,
+                            PluginMsg::UpdateConfig("internal:search".to_string(), v),
+                        )
+                    }),
+                    scrollable(sidebar_list)
+                ]
+                .spacing(10);
 
                 let content: Element<'a, AppMessage> = if let Some(m) = &self.active_module {
                     let is_custom = m.starts_with("custom/");
-                    
+
                     let tab_btn = |label: &str, tab: EditorTab, id: usize, current: EditorTab| {
-                         let active = current == tab;
-                         if active {
-                             btn::primary(text(label.to_string()), AppMessage::PluginMessage(id, PluginMsg::Waybar(WaybarAction::SwitchTab(tab))))
-                         } else {
-                             btn::secondary(text(label.to_string()), AppMessage::PluginMessage(id, PluginMsg::Waybar(WaybarAction::SwitchTab(tab))))
-                         }
+                        let active = current == tab;
+                        if active {
+                            btn::primary(
+                                text(label.to_string()),
+                                AppMessage::PluginMessage(
+                                    id,
+                                    PluginMsg::Waybar(WaybarAction::SwitchTab(tab)),
+                                ),
+                            )
+                        } else {
+                            btn::secondary(
+                                text(label.to_string()),
+                                AppMessage::PluginMessage(
+                                    id,
+                                    PluginMsg::Waybar(WaybarAction::SwitchTab(tab)),
+                                ),
+                            )
+                        }
                     };
 
                     let tab_bar = row![
-                         text(format!("Editing: {}", m)).size(16).width(Length::Fill),
-                         row![
-                             tab_btn("Settings", EditorTab::Settings, self.id, self.current_tab),
-                             tab_btn("JSON", EditorTab::Json, self.id, self.current_tab),
-                             tab_btn("Style", EditorTab::Style, self.id, self.current_tab),
-                         ].spacing(5)
-                    ].spacing(10).align_y(iced::Alignment::Center);
+                        text(format!("Editing: {}", m)).size(16).width(Length::Fill),
+                        row![
+                            tab_btn("Settings", EditorTab::Settings, self.id, self.current_tab),
+                            tab_btn("JSON", EditorTab::Json, self.id, self.current_tab),
+                            tab_btn("Style", EditorTab::Style, self.id, self.current_tab),
+                        ]
+                        .spacing(5)
+                    ]
+                    .spacing(10)
+                    .align_y(iced::Alignment::Center);
 
                     let main_edit_area: Element<AppMessage> = match self.current_tab {
-                        EditorTab::Json => {
-                              column![
-                                   text("Raw JSON Configuration").size(14).style(move |_: &iced::Theme| text::Style{color: Some(palette.subtext1)}),
-                                   iced::widget::text_editor(&self.json_content)
-                                       .on_action(|action| AppMessage::PluginMessage(self.id, PluginMsg::Waybar(WaybarAction::UpdateJson(action))))
-                                       .height(Length::Fill)
-                              ].spacing(10).height(Length::Fill).into()
-                        },
+                        EditorTab::Json => column![
+                            text("Raw JSON Configuration").size(14).style(
+                                move |_: &iced::Theme| text::Style {
+                                    color: Some(palette.subtext1)
+                                }
+                            ),
+                            iced::widget::text_editor(&self.json_content)
+                                .on_action(|action| AppMessage::PluginMessage(
+                                    self.id,
+                                    PluginMsg::Waybar(WaybarAction::UpdateJson(action))
+                                ))
+                                .height(Length::Fill)
+                        ]
+                        .spacing(10)
+                        .height(Length::Fill)
+                        .into(),
                         EditorTab::Style => {
-                              let selector = self.get_css_selector(m);
+                            let selector = self.get_css_selector(m);
 
-                              let color_preview_btn = |label: &str, val: &str, target: String| {
-                                  let color = color_picker::parse_color(val).unwrap_or(iced::Color::TRANSPARENT);
-                                  
-                                  let preview = container(text("  "))
-                                      .width(Length::Fixed(30.0))
-                                      .height(Length::Fixed(30.0))
-                                      .style(move |_: &iced::Theme| container::Style {
-                                          background: Some(iced::Background::Color(color)),
-                                          border: iced::Border {
-                                              color: palette.subtext0,
-                                              width: 1.0,
-                                              radius: 4.0.into(),
-                                          },
-                                          ..Default::default()
-                                      });
-                                      
-                                   column![
-                                       text(label.to_string()).size(12).style(move |_: &iced::Theme| text::Style{color: Some(palette.subtext1)}),
-                                       button(preview)
-                                           .on_press(AppMessage::PluginMessage(self.id, PluginMsg::Waybar(WaybarAction::ColorPick {
-                                               target
-                                           })))
-                                           .padding(0)
-                                           .style(|_,_| button::Style::default())
-                                   ].spacing(5)
-                              };
+                            let color_preview_btn = |label: &str, val: &str, target: String| {
+                                let color = color_picker::parse_color(val)
+                                    .unwrap_or(iced::Color::TRANSPARENT);
 
-                              let sel_font = selector.clone();
-                              let sel_pad = selector.clone();
+                                let preview = container(text("  "))
+                                    .width(Length::Fixed(30.0))
+                                    .height(Length::Fixed(30.0))
+                                    .style(move |_: &iced::Theme| container::Style {
+                                        background: Some(iced::Background::Color(color)),
+                                        border: iced::Border {
+                                            color: palette.subtext0,
+                                            width: 1.0,
+                                            radius: 4.0.into(),
+                                        },
+                                        ..Default::default()
+                                    });
 
-                              let style_controls = row![
-                                  color_preview_btn("Background", &self.style_bg_color, format!("style:{}:background-color", selector)),
-                                  color_preview_btn("Text Color", &self.style_text_color, format!("style:{}:color", selector)),
-                                  
-                                  column![
-                                      text("Font Size").size(12).style(move |_: &iced::Theme| text::Style{color: Some(palette.subtext1)}),
-                                      ti::input("e.g. 12px", &self.style_font_size, move |v| AppMessage::PluginMessage(self.id, PluginMsg::UpdateConfig(format!("style:{}:font-size", sel_font), v)))
-                                          .width(Length::Fixed(100.0))
-                                  ].spacing(5),
+                                column![
+                                    text(label.to_string()).size(12).style(
+                                        move |_: &iced::Theme| text::Style {
+                                            color: Some(palette.subtext1)
+                                        }
+                                    ),
+                                    button(preview)
+                                        .on_press(AppMessage::PluginMessage(
+                                            self.id,
+                                            PluginMsg::Waybar(WaybarAction::ColorPick { target })
+                                        ))
+                                        .padding(0)
+                                        .style(|_, _| button::Style::default())
+                                ]
+                                .spacing(5)
+                            };
 
-                                  column![
-                                      text("Padding").size(12).style(move |_: &iced::Theme| text::Style{color: Some(palette.subtext1)}),
-                                      ti::input("e.g. 5px", &self.style_padding, move |v| AppMessage::PluginMessage(self.id, PluginMsg::UpdateConfig(format!("style:{}:padding", sel_pad), v)))
-                                          .width(Length::Fixed(100.0))
-                                  ].spacing(5),
-                              ]
-                              .spacing(20)
-                              .align_y(iced::Alignment::Center);
+                            let sel_font = selector.clone();
+                            let sel_pad = selector.clone();
 
-                              column![
-                                   style_controls,
-                                   text("Global CSS Style").size(14).style(move |_: &iced::Theme| text::Style{color: Some(palette.subtext1)}),
-                                   iced::widget::text_editor(&self.style_content)
-                                       .on_action(|action| AppMessage::PluginMessage(self.id, PluginMsg::Waybar(WaybarAction::UpdateStyle(action))))
-                                       .height(Length::Fill)
-                              ].spacing(10).height(Length::Fill).into()
-                        },
+                            let style_controls = row![
+                                color_preview_btn(
+                                    "Background",
+                                    &self.style_bg_color,
+                                    format!("style:{}:background-color", selector)
+                                ),
+                                color_preview_btn(
+                                    "Text Color",
+                                    &self.style_text_color,
+                                    format!("style:{}:color", selector)
+                                ),
+                                column![
+                                    text("Font Size").size(12).style(move |_: &iced::Theme| {
+                                        text::Style {
+                                            color: Some(palette.subtext1),
+                                        }
+                                    }),
+                                    ti::input("e.g. 12px", &self.style_font_size, move |v| {
+                                        AppMessage::PluginMessage(
+                                            self.id,
+                                            PluginMsg::UpdateConfig(
+                                                format!("style:{}:font-size", sel_font),
+                                                v,
+                                            ),
+                                        )
+                                    })
+                                    .width(Length::Fixed(100.0))
+                                ]
+                                .spacing(5),
+                                column![
+                                    text("Padding").size(12).style(move |_: &iced::Theme| {
+                                        text::Style {
+                                            color: Some(palette.subtext1),
+                                        }
+                                    }),
+                                    ti::input("e.g. 5px", &self.style_padding, move |v| {
+                                        AppMessage::PluginMessage(
+                                            self.id,
+                                            PluginMsg::UpdateConfig(
+                                                format!("style:{}:padding", sel_pad),
+                                                v,
+                                            ),
+                                        )
+                                    })
+                                    .width(Length::Fixed(100.0))
+                                ]
+                                .spacing(5),
+                            ]
+                            .spacing(20)
+                            .align_y(iced::Alignment::Center);
+
+                            column![
+                                style_controls,
+                                text("Global CSS Style")
+                                    .size(14)
+                                    .style(move |_: &iced::Theme| text::Style {
+                                        color: Some(palette.subtext1)
+                                    }),
+                                iced::widget::text_editor(&self.style_content)
+                                    .on_action(|action| AppMessage::PluginMessage(
+                                        self.id,
+                                        PluginMsg::Waybar(WaybarAction::UpdateStyle(action))
+                                    ))
+                                    .height(Length::Fill)
+                            ]
+                            .spacing(10)
+                            .height(Length::Fill)
+                            .into()
+                        }
                         EditorTab::Settings => {
                             let schema_opt = self.get_schema_for_module(m);
 
@@ -1692,20 +1812,36 @@ impl Plugin for WaybarPlugin {
                             let mut option_defs: HashMap<String, OptionDef> = HashMap::new();
                             if let Some(schema) = &schema_opt {
                                 for o in &schema.options {
-                                    option_defs.insert(o.name.clone(), OptionDef::new(
-                                        &o.name,
-                                        match o.option_type {
-                                            OptionType::Bool => schema_renderer::OptionType::Bool,
-                                            OptionType::Int => schema_renderer::OptionType::Int,
-                                            OptionType::Float => schema_renderer::OptionType::String,
-                                            OptionType::String => schema_renderer::OptionType::String,
-                                            OptionType::Color => schema_renderer::OptionType::Color,
-                                            OptionType::Enum => schema_renderer::OptionType::String,
-                                            OptionType::Json => schema_renderer::OptionType::String,
-                                        },
-                                        &o.default,
-                                        &o.description,
-                                    ).with_choices(o.choices.clone().unwrap_or_default()));
+                                    option_defs.insert(
+                                        o.name.clone(),
+                                        OptionDef::new(
+                                            &o.name,
+                                            match o.option_type {
+                                                OptionType::Bool => {
+                                                    schema_renderer::OptionType::Bool
+                                                }
+                                                OptionType::Int => schema_renderer::OptionType::Int,
+                                                OptionType::Float => {
+                                                    schema_renderer::OptionType::String
+                                                }
+                                                OptionType::String => {
+                                                    schema_renderer::OptionType::String
+                                                }
+                                                OptionType::Color => {
+                                                    schema_renderer::OptionType::Color
+                                                }
+                                                OptionType::Enum => {
+                                                    schema_renderer::OptionType::String
+                                                }
+                                                OptionType::Json => {
+                                                    schema_renderer::OptionType::String
+                                                }
+                                            },
+                                            &o.default,
+                                            &o.description,
+                                        )
+                                        .with_choices(o.choices.clone().unwrap_or_default()),
+                                    );
                                 }
                             }
 
@@ -1718,31 +1854,40 @@ impl Plugin for WaybarPlugin {
                                         if !option_defs.contains_key(k) {
                                             all_keys.push(k.clone());
                                             // Add Generic Def for this custom key
-                                            option_defs.insert(k.clone(), OptionDef::new(
-                                                k,
-                                                schema_renderer::OptionType::String,
-                                                "",
-                                                "Custom Option"
-                                            ));
+                                            option_defs.insert(
+                                                k.clone(),
+                                                OptionDef::new(
+                                                    k,
+                                                    schema_renderer::OptionType::String,
+                                                    "",
+                                                    "Custom Option",
+                                                ),
+                                            );
                                         }
                                     }
                                 }
                             }
                             // Special handling for general module
                             if m == "general" {
-                                 if let Some(obj) = root.as_object() {
-                                     for (k, v) in obj {
-                                         if !v.is_object() && !v.is_array() && !option_defs.contains_key(k) {
-                                             all_keys.push(k.clone());
-                                             option_defs.insert(k.clone(), OptionDef::new(
-                                                k,
-                                                schema_renderer::OptionType::String,
-                                                "",
-                                                "General Option"
-                                            ));
-                                         }
-                                     }
-                                 }
+                                if let Some(obj) = root.as_object() {
+                                    for (k, v) in obj {
+                                        if !v.is_object()
+                                            && !v.is_array()
+                                            && !option_defs.contains_key(k)
+                                        {
+                                            all_keys.push(k.clone());
+                                            option_defs.insert(
+                                                k.clone(),
+                                                OptionDef::new(
+                                                    k,
+                                                    schema_renderer::OptionType::String,
+                                                    "",
+                                                    "General Option",
+                                                ),
+                                            );
+                                        }
+                                    }
+                                }
                             }
 
                             all_keys.sort();
@@ -1754,13 +1899,26 @@ impl Plugin for WaybarPlugin {
 
                                 // Get Value
                                 let val = if let Some(mod_val) = root.get(m) {
-                                    mod_val.get(&key).map(|v| {
-                                        if v.is_string() { v.as_str().unwrap().to_string() } else { v.to_string() }
-                                    }).unwrap_or_else(|| def.default.clone())
+                                    mod_val
+                                        .get(&key)
+                                        .map(|v| {
+                                            if v.is_string() {
+                                                v.as_str().unwrap().to_string()
+                                            } else {
+                                                v.to_string()
+                                            }
+                                        })
+                                        .unwrap_or_else(|| def.default.clone())
                                 } else if m == "general" {
-                                    root.get(&key).map(|v| {
-                                        if v.is_string() { v.as_str().unwrap().to_string() } else { v.to_string() }
-                                    }).unwrap_or_else(|| def.default.clone())
+                                    root.get(&key)
+                                        .map(|v| {
+                                            if v.is_string() {
+                                                v.as_str().unwrap().to_string()
+                                            } else {
+                                                v.to_string()
+                                            }
+                                        })
+                                        .unwrap_or_else(|| def.default.clone())
                                 } else {
                                     def.default.clone()
                                 };
@@ -1769,59 +1927,123 @@ impl Plugin for WaybarPlugin {
                                     &def,
                                     &val,
                                     format!("{}:{}", m, key),
-                                    self.id
+                                    self.id,
                                 );
 
                                 row![
                                     container(element).width(Length::Fill),
-                                    btn::ghost("🗑", AppMessage::PluginMessage(self.id, PluginMsg::Waybar(WaybarAction::CustomOptionDeleteInit(key.clone()))))
-                                ].spacing(10).align_y(iced::Alignment::Center).into()
-                            })).spacing(5);
+                                    btn::ghost(
+                                        "🗑",
+                                        AppMessage::PluginMessage(
+                                            self.id,
+                                            PluginMsg::Waybar(
+                                                WaybarAction::CustomOptionDeleteInit(key.clone())
+                                            )
+                                        )
+                                    )
+                                ]
+                                .spacing(10)
+                                .align_y(iced::Alignment::Center)
+                                .into()
+                            }))
+                            .spacing(5);
 
                             let add_section = column![
-                                text("Add New Option").size(14).style(move |_: &iced::Theme| text::Style{color: Some(palette.subtext1)}),
+                                text("Add New Option")
+                                    .size(14)
+                                    .style(move |_: &iced::Theme| text::Style {
+                                        color: Some(palette.subtext1)
+                                    }),
                                 row![
-                                    ti::input("Key", &self.custom_option_key_input, move |v| AppMessage::PluginMessage(self.id, PluginMsg::Waybar(WaybarAction::CustomOptionInputKey(v)))).width(Length::FillPortion(1)),
-                                    ti::input("Value", &self.custom_option_val_input, move |v| AppMessage::PluginMessage(self.id, PluginMsg::Waybar(WaybarAction::CustomOptionInputValue(v)))).width(Length::FillPortion(2)),
-                                    btn::primary("Add", AppMessage::PluginMessage(self.id, PluginMsg::Waybar(WaybarAction::CustomOptionAdd)))
-                                ].spacing(10)
-                            ].spacing(10).padding(10);
+                                    ti::input("Key", &self.custom_option_key_input, move |v| {
+                                        AppMessage::PluginMessage(
+                                            self.id,
+                                            PluginMsg::Waybar(WaybarAction::CustomOptionInputKey(
+                                                v,
+                                            )),
+                                        )
+                                    })
+                                    .width(Length::FillPortion(1)),
+                                    ti::input("Value", &self.custom_option_val_input, move |v| {
+                                        AppMessage::PluginMessage(
+                                            self.id,
+                                            PluginMsg::Waybar(
+                                                WaybarAction::CustomOptionInputValue(v),
+                                            ),
+                                        )
+                                    })
+                                    .width(Length::FillPortion(2)),
+                                    btn::primary(
+                                        "Add",
+                                        AppMessage::PluginMessage(
+                                            self.id,
+                                            PluginMsg::Waybar(WaybarAction::CustomOptionAdd)
+                                        )
+                                    )
+                                ]
+                                .spacing(10)
+                            ]
+                            .spacing(10)
+                            .padding(10);
 
-                            let final_view = scrollable(column![
-                                list_content,
-                                add_section
-                            ].spacing(20).padding(10));
+                            let final_view = scrollable(
+                                column![list_content, add_section].spacing(20).padding(10),
+                            );
 
                             // Debug section if relevant
                             if is_custom {
-                                 // Fetch exec command safely
-                                 let exec_cmd = root.get(m).and_then(|v| v.get("exec")).and_then(|v| v.as_str()).unwrap_or("").to_string();
+                                // Fetch exec command safely
+                                let exec_cmd = root
+                                    .get(m)
+                                    .and_then(|v| v.get("exec"))
+                                    .and_then(|v| v.as_str())
+                                    .unwrap_or("")
+                                    .to_string();
 
-                                 column![
+                                column![
                                     final_view,
-                                    text("Debug / Test").size(16).style(move |_: &iced::Theme| text::Style{color: Some(palette.mauve)}),
+                                    text("Debug / Test").size(16).style(move |_: &iced::Theme| {
+                                        text::Style {
+                                            color: Some(palette.mauve),
+                                        }
+                                    }),
                                     row![
-                                        btn::primary("Run Module", AppMessage::PluginMessage(self.id, PluginMsg::Waybar(WaybarAction::DebugRun(
-                                            exec_cmd
-                                        )))),
+                                        btn::primary(
+                                            "Run Module",
+                                            AppMessage::PluginMessage(
+                                                self.id,
+                                                PluginMsg::Waybar(WaybarAction::DebugRun(exec_cmd))
+                                            )
+                                        ),
                                         text("Output will appear below...").size(12)
-                                    ].spacing(10),
-                                    container(scrollable(text(&self.debug_output).font(iced::Font::MONOSPACE).size(12)))
-                                        .padding(10)
-                                        .style(move |_| container::Style {
-                                            background: Some(iced::Background::Color(palette.base)),
-                                            border: iced::Border { color: palette.surface2, width: 1.0, radius: 4.0.into() },
-                                            ..Default::default()
-                                        })
-                                        .height(Length::Fixed(150.0))
-                                        .width(Length::Fill)
-                                ].spacing(20).into()
+                                    ]
+                                    .spacing(10),
+                                    container(scrollable(
+                                        text(&self.debug_output)
+                                            .font(iced::Font::MONOSPACE)
+                                            .size(12)
+                                    ))
+                                    .padding(10)
+                                    .style(move |_| container::Style {
+                                        background: Some(iced::Background::Color(palette.base)),
+                                        border: iced::Border {
+                                            color: palette.surface2,
+                                            width: 1.0,
+                                            radius: 4.0.into()
+                                        },
+                                        ..Default::default()
+                                    })
+                                    .height(Length::Fixed(150.0))
+                                    .width(Length::Fill)
+                                ]
+                                .spacing(20)
+                                .into()
                             } else {
                                 final_view.into()
                             }
                         }
                     };
-                    
+
                     column![tab_bar, main_edit_area].spacing(10).into()
                 } else {
                     text("Select a module to edit settings").into()
@@ -1993,56 +2215,113 @@ impl Plugin for WaybarPlugin {
             ]
             .into()
         } else if self.create_custom_modal_open {
-             stack![
+            stack![
                 content_stack,
                 modal::overlay(
-                    container(column![
-                        text("Create Custom Module").size(18).style(move |_: &_| text::Style { color: Some(palette.text) }),
-                        text("Enter a unique name for the new module (e.g. 'gpu', 'weather'):")
-                            .size(14)
-                            .style(move |_: &_| text::Style { color: Some(palette.subtext1) }),
-                        ti::input("Module Name", &self.create_custom_name, move |v| {
-                            AppMessage::PluginMessage(self.id, PluginMsg::Waybar(WaybarAction::CreateCustomInput(v)))
-                        }),
-                        row![
-                            btn::ghost(text("Cancel"), AppMessage::PluginMessage(self.id, PluginMsg::Waybar(WaybarAction::CreateCustomCancel))),
-                            btn::primary(text("Create"), AppMessage::PluginMessage(self.id, PluginMsg::Waybar(WaybarAction::CreateCustomConfirm(self.create_custom_name.clone()))))
-                        ].spacing(10)
-                    ].spacing(15))
+                    container(
+                        column![
+                            text("Create Custom Module")
+                                .size(18)
+                                .style(move |_: &_| text::Style {
+                                    color: Some(palette.text)
+                                }),
+                            text("Enter a unique name for the new module (e.g. 'gpu', 'weather'):")
+                                .size(14)
+                                .style(move |_: &_| text::Style {
+                                    color: Some(palette.subtext1)
+                                }),
+                            ti::input("Module Name", &self.create_custom_name, move |v| {
+                                AppMessage::PluginMessage(
+                                    self.id,
+                                    PluginMsg::Waybar(WaybarAction::CreateCustomInput(v)),
+                                )
+                            }),
+                            row![
+                                btn::ghost(
+                                    text("Cancel"),
+                                    AppMessage::PluginMessage(
+                                        self.id,
+                                        PluginMsg::Waybar(WaybarAction::CreateCustomCancel)
+                                    )
+                                ),
+                                btn::primary(
+                                    text("Create"),
+                                    AppMessage::PluginMessage(
+                                        self.id,
+                                        PluginMsg::Waybar(WaybarAction::CreateCustomConfirm(
+                                            self.create_custom_name.clone()
+                                        ))
+                                    )
+                                )
+                            ]
+                            .spacing(10)
+                        ]
+                        .spacing(15)
+                    )
                     .padding(20)
                     .style(modal::container_style)
                     .width(Length::Fixed(400.0))
                     .into(),
-                    AppMessage::PluginMessage(self.id, PluginMsg::Waybar(WaybarAction::CreateCustomCancel)),
+                    AppMessage::PluginMessage(
+                        self.id,
+                        PluginMsg::Waybar(WaybarAction::CreateCustomCancel)
+                    ),
                     true
                 )
-            ].into()
+            ]
+            .into()
         } else if self.json_error_modal_open {
             stack![
                 content_stack,
                 modal::overlay(
-                    container(column![
-                        text("JSON Syntax Error").size(18).style(move |_: &_| text::Style { color: Some(palette.red) }),
-                        text(&self.json_error_message).size(14).style(move |_: &_| text::Style { color: Some(palette.text) }),
-                        row![
-                            btn::primary("OK", AppMessage::PluginMessage(self.id, PluginMsg::Waybar(WaybarAction::JsonErrorModalClose)))
-                        ].spacing(10)
-                    ].spacing(15))
+                    container(
+                        column![
+                            text("JSON Syntax Error")
+                                .size(18)
+                                .style(move |_: &_| text::Style {
+                                    color: Some(palette.red)
+                                }),
+                            text(&self.json_error_message).size(14).style(move |_: &_| {
+                                text::Style {
+                                    color: Some(palette.text),
+                                }
+                            }),
+                            row![btn::primary(
+                                "OK",
+                                AppMessage::PluginMessage(
+                                    self.id,
+                                    PluginMsg::Waybar(WaybarAction::JsonErrorModalClose)
+                                )
+                            )]
+                            .spacing(10)
+                        ]
+                        .spacing(15)
+                    )
                     .padding(20)
                     .style(modal::container_style)
                     .width(Length::Fixed(400.0))
                     .into(),
-                    AppMessage::PluginMessage(self.id, PluginMsg::Waybar(WaybarAction::JsonErrorModalClose)),
+                    AppMessage::PluginMessage(
+                        self.id,
+                        PluginMsg::Waybar(WaybarAction::JsonErrorModalClose)
+                    ),
                     true
                 )
-             ].into()
+            ]
+            .into()
         } else {
             content_stack.into()
         };
 
-        let active_toasts = self.toasts.iter().map(|t| crate::view::components::toast::view(t));
-        let toast_list = column(active_toasts).spacing(10).align_x(iced::Alignment::End).width(Length::Fill);
-        
+        let active_toasts = self
+            .toasts
+            .iter()
+            .map(|t| crate::view::components::toast::view(t));
+        let toast_list = column(active_toasts)
+            .spacing(10)
+            .align_x(iced::Alignment::End)
+            .width(Length::Fill);
+
         // Align bottom-right
         let toast_overlay = container(toast_list)
             .width(Length::Fill)
@@ -2051,10 +2330,7 @@ impl Plugin for WaybarPlugin {
             .align_y(iced::alignment::Vertical::Bottom)
             .align_x(iced::alignment::Horizontal::Right);
 
-        stack![
-            modal_layer,
-            toast_overlay
-        ].into()
+        stack![modal_layer, toast_overlay].into()
     }
 
     fn searchable_items(&self) -> Vec<crate::core::SearchResult> {

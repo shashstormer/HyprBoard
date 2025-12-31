@@ -13,26 +13,23 @@ impl CssParser {
 
     pub fn set_property(&mut self, selector: &str, prop: &str, value: &str) {
         let escaped_selector = regex::escape(selector);
-        
+
         let selector_re = Regex::new(&format!(r"(?m)^[\t ]*({})\s*\{{", escaped_selector)).unwrap();
 
         if let Some(mat) = selector_re.find(&self.content.clone()) {
-            let match_start = mat.start(); 
-            let _ = match_start; 
+            let match_start = mat.start();
+            let _ = match_start;
             let block_start_idx = mat.end();
-            
-            
+
             if let Some(block_end_idx) = self.find_closing_brace(block_start_idx) {
                 let block_content = &self.content[block_start_idx..block_end_idx];
-                
-                
+
                 let new_block_content = self.update_property_in_block(block_content, prop, value);
-                
-                
-                self.content.replace_range(block_start_idx..block_end_idx, &new_block_content);
+
+                self.content
+                    .replace_range(block_start_idx..block_end_idx, &new_block_content);
             }
         } else {
-            
             self.append_new_block(selector, prop, value);
         }
     }
@@ -57,16 +54,15 @@ impl CssParser {
         let prop_re = Regex::new(&format!(r"(?m)(^\s*{}\s*:\s*)([^;]+)(;)", escaped_prop)).unwrap();
 
         if prop_re.is_match(block_content) {
-            
-            
-            prop_re.replace(block_content, format!("${{1}}{}${{3}}", value)).to_string()
+            prop_re
+                .replace(block_content, format!("${{1}}{}${{3}}", value))
+                .to_string()
         } else {
-            
             let trimmed = block_content.trim_end();
             if trimmed.is_empty() {
                 format!("\n    {}: {};\n", prop, value)
             } else {
-                 format!("{}\n    {}: {};\n", trimmed, prop, value)
+                format!("{}\n    {}: {};\n", trimmed, prop, value)
             }
         }
     }
@@ -78,7 +74,7 @@ impl CssParser {
 
     pub fn get_property(&self, selector: &str, prop: &str) -> Option<String> {
         let escaped_selector = regex::escape(selector);
-        
+
         let selector_re = Regex::new(&format!(r"(?m)^[\t ]*({})\s*\{{", escaped_selector)).unwrap();
 
         if let Some(mat) = selector_re.find(&self.content) {
@@ -86,8 +82,9 @@ impl CssParser {
             if let Some(block_end_idx) = self.find_closing_brace(block_start_idx) {
                 let block_content = &self.content[block_start_idx..block_end_idx];
                 let escaped_prop = regex::escape(prop);
-                let prop_re = Regex::new(&format!(r"(?m)^\s*{}\s*:\s*([^;]+);", escaped_prop)).unwrap();
-                
+                let prop_re =
+                    Regex::new(&format!(r"(?m)^\s*{}\s*:\s*([^;]+);", escaped_prop)).unwrap();
+
                 if let Some(cap) = prop_re.captures(block_content) {
                     return Some(cap[1].trim().to_string());
                 }
@@ -134,13 +131,13 @@ mod tests {
         assert!(output.contains("#clock {"));
         assert!(output.contains("color: red;"));
     }
-    
+
     #[test]
     fn test_empty_file() {
-         let mut parser = CssParser::new("");
-         parser.set_property("#waybar", "font-size", "12px");
-         let output = parser.to_string();
-         assert!(output.contains("#waybar {"));
-         assert!(output.contains("font-size: 12px;"));
+        let mut parser = CssParser::new("");
+        parser.set_property("#waybar", "font-size", "12px");
+        let output = parser.to_string();
+        assert!(output.contains("#waybar {"));
+        assert!(output.contains("font-size: 12px;"));
     }
 }

@@ -256,6 +256,8 @@ impl ConfigMigrator {
                     
                     if effect == "stayfocused" {
                         effect = "stay_focused".to_string();
+                    } else if effect == "ignorezero" {
+                        effect = "ignore_alpha 0".to_string();
                     }
 
                     let mut new_parts = Vec::new();

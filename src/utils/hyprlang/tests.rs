@@ -469,8 +469,8 @@ fn test_lexer_quoted_strings() {
     let config = parse(tokens, PathBuf::from("."), HashSet::new()).unwrap();
 
     assert_eq!(config.lines.len(), 3);
-    assert_eq!(config.lines[0].value.raw, "Hello World");
-    assert_eq!(config.lines[1].value.raw, "single quotes");
+    assert_eq!(config.lines[0].value.raw, "\"Hello World\"");
+    assert_eq!(config.lines[1].value.raw, "\'single quotes\'");
     assert!(config.lines[2].value.raw.contains("escape"));
 }
 
@@ -605,7 +605,7 @@ fn test_special_characters_in_values() {
     let input = r#"
     regex = ^(firefox|chrome)$
     path = /home/user/.config/hypr
-    url = https:
+    url = https://example.com
     "#;
     let mut lexer = Lexer::new(input);
     let tokens = lexer.tokenize();

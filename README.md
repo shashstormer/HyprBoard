@@ -1,3 +1,10 @@
+This project supports only hyprland 0.52 with no plans for future support.
+
+you can use https://github.com/shashstormer/arch-board which supports 0.53 and 0.54 (as it supports the .conf format with no significant changes) and whatever version supports .conf format 0.52+
+
+But that project also does not have any planned .lua config support at the moment.
+
+
 # HyprBoard
 
 ![Rust](https://img.shields.io/badge/Made_with-Rust-orange?logo=rust)
